@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateDiscussionRequest;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Models\Discussion;
+use App\Models\Reply;
 use Illuminate\Support\Str;
 
 class DiscussionController extends Controller implements HasMiddleware
@@ -77,4 +78,11 @@ class DiscussionController extends Controller implements HasMiddleware
             new Middleware('auth', only: ['create', 'store']),
         ];
     }
+
+    public function reply(Discussion $discussion, Reply $reply) {
+        $discussion->markAsBestReply($reply);
+        return back()->with('success', 'Best reply marked successfully!');
+    }
+
+    
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Controllers\ReplyController;
+use App\Notifications\MarkedAsBestReply;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -27,6 +28,13 @@ class Discussion extends Model
 
     public function replies() {
         return $this->hasMany(Reply::class);
+    }
+
+    public function markAsBestReply(Reply $reply) {
+        $this->update([
+            'reply_id' => $reply->id,
+        ]);
+        $reply->user->notify(new MarkedAsBestReply($reply->discussion));
     }
 }
 

@@ -1,3 +1,8 @@
+@php
+    $notifications = auth()->user()->unreadNotifications;
+    $unreadCount = $notifications->count();
+@endphp
+
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,8 +26,75 @@
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Settings & Notifications Dropdowns -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6 sm:gap-3">
+                
+                <!-- Notifications Dropdown -->
+
+                <x-dropdown align="right" width="80">
+                    <x-slot name="trigger">
+                        <button
+                            type="button"
+                            class="relative rounded-full p-2 text-gray-400 transition ease-in-out duration-150 hover:text-gray-500 focus:outline-none"
+                            aria-label="{{ $unreadCount
+                                ? __('Notifications (:count unread)', ['count' => $unreadCount])
+                                : __('Notifications') }}"
+                        >
+                            <!-- Bell Icon -->
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+
+                            <!-- Unread Red Badge -->
+                            @if ($unreadCount > 0)
+                                <span
+                                    class="absolute right-1 top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold leading-none text-white"
+                                    aria-hidden="true"
+                                >
+                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                </span>
+                            @endif
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <div class="border-b border-gray-100 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                            {{ __('Notifications') }}
+                        </div>
+
+                        <div class="max-h-64 divide-y divide-gray-100 overflow-y-auto">
+                            @forelse ($notifications as $notification)
+                                <a
+                                    href="{{ route('notifications.read', $notification->id) }}"
+                                    class="block px-4 py-3 transition-colors hover:bg-gray-50"
+                                >
+                                    <p class="text-xs font-medium text-gray-800">
+                                        @if (isset($notification->data['message']))
+                                            {{ $notification->data['message'] }}
+                                        @elseif ($notification->type === 'App\Notifications\MarkedAsBestReply')
+                                            {{ __('Your reply was marked as the best reply!') }}
+                                        @else
+                                            {{ __('A new reply was added to your discussion.') }}
+                                        @endif
+                                    </p>
+                                    <time
+                                        class="text-[10px] text-gray-400"
+                                        datetime="{{ $notification->created_at->toIso8601String() }}"
+                                        title="{{ $notification->created_at->toDayDateTimeString() }}"
+                                    >
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </time>
+                                </a>
+                            @empty
+                                <p class="px-4 py-4 text-center text-xs text-gray-400">
+                                    {{ __('No new notifications') }}
+                                </p>
+                            @endforelse
+                        </div>
+                    </x-slot>
+                </x-dropdown>
+
+                <!-- User Profile Dropdown -->
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -73,7 +145,9 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
+            <x-responsive-nav-link :href="route('discussion.index')" :active="request()->routeIs('discussion.index')">
+                {{ __('Discussions') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

@@ -71,6 +71,27 @@
                             </div>
                         </div>
 
+                    <div class="flex items-center gap-2">
+                        @if ($discussion->reply_id === $reply->id)
+                            <!-- Best Reply Badge -->
+                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Best reply
+                            </span>
+                        @elseif (auth()->check() && auth()->id() === $discussion->user_id)
+                            <!-- Mark as Best Button (Only visible to Discussion Owner) -->
+                            <form action="{{ route('discussions.best-reply', [$discussion, $reply]) }}" method="POST">
+                                @csrf
+                                @method('POST')
+                                <button type="submit" class="text-xs font-medium text-gray-400 hover:text-emerald-600 transition-colors">
+                                    Mark as Best
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+
                         <div class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
                             {{ $reply->content }}
                         </div>

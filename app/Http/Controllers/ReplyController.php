@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReplyRequest;
 use App\Models\Discussion;
+use App\Notifications\NewReplyAdded;
 use Illuminate\Http\Request;
 
 class ReplyController extends Controller
@@ -33,6 +34,9 @@ class ReplyController extends Controller
             'discussion_id' => $discussion->id,
             'content' => $request->validated('content'),
         ]);
+        if ($discussion->user_id !== auth()->id()) {
+            $discussion->user->notify(new NewReplyAdded($discussion));
+        }
         return back()->with('success', 'Reply posted successfully!');
     }
 

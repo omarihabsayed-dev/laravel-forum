@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('channel_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('content');
+            $table->integer('reply_id')->nullable();
             $table->string('slug')->unique();
             $table->timestamps();
         });
