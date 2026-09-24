@@ -23,9 +23,9 @@ class StoreDiscussionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required',
-            'content' => 'required',
-            'channel_id' => 'required',
+            'title' => ['required', 'string', 'max:255', 'unique:discussions,title'],
+            'channel_id' => ['required', 'exists:channels,id'],
+            'content' => ['required', 'string'],
         ];
     }
 }

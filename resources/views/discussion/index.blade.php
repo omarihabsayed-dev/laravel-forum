@@ -34,7 +34,7 @@
 
         <!-- Pagination Links -->
         <div class="pt-2">
-            {{ $discussions->links() }}
+            {{ $discussions->withQueryString()->links() }}
         </div>
     </div>
 </x-app-layout>

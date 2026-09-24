@@ -17,7 +17,7 @@ class DiscussionController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        return view('discussion.index', ['discussions' => Discussion::with(['user', 'channel'])->latest()->paginate(3)]);
+        return view('discussion.index', ['discussions' => Discussion::filterByChannel()->latest()->paginate(3)]);
     }
 
     /**

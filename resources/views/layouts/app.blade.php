@@ -48,7 +48,7 @@
                                                 @foreach($channels as $channel)
                                                     @php $active = request()->route('channel') == $channel->id; @endphp
                                                     <li>
-                                                        <a href=""
+                                                        <a href="{{ route('discussion.index', ['channel' => $channel->slug]) }}"
                                                         class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors
                                                                 {{ $active
                                                                     ? 'bg-gray-100 font-medium text-gray-900'
